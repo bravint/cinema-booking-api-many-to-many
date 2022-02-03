@@ -64,11 +64,34 @@ CREATE TABLE "Ticket" (
     CONSTRAINT "Ticket_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "Contact_email_key" ON "Contact"("email");
+-- CreateTable
+CREATE TABLE "Seat" (
+    "id" SERIAL NOT NULL,
+    "number" INTEGER NOT NULL,
+    "screenId" INTEGER NOT NULL,
+    "ticketId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Seat_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SeatsAssignedToCustomer" (
+    "id" SERIAL NOT NULL,
+    "seatId" INTEGER NOT NULL,
+    "customerId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "SeatsAssignedToCustomer_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Contact_customerId_key" ON "Contact"("customerId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Contact_email_key" ON "Contact"("email");
 
 -- AddForeignKey
 ALTER TABLE "Contact" ADD CONSTRAINT "Contact_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -84,3 +107,15 @@ ALTER TABLE "Ticket" ADD CONSTRAINT "Ticket_screeningId_fkey" FOREIGN KEY ("scre
 
 -- AddForeignKey
 ALTER TABLE "Ticket" ADD CONSTRAINT "Ticket_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Seat" ADD CONSTRAINT "Seat_screenId_fkey" FOREIGN KEY ("screenId") REFERENCES "Screen"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Seat" ADD CONSTRAINT "Seat_ticketId_fkey" FOREIGN KEY ("ticketId") REFERENCES "Ticket"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SeatsAssignedToCustomer" ADD CONSTRAINT "SeatsAssignedToCustomer_seatId_fkey" FOREIGN KEY ("seatId") REFERENCES "Seat"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SeatsAssignedToCustomer" ADD CONSTRAINT "SeatsAssignedToCustomer_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

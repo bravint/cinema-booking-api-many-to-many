@@ -2,11 +2,13 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function seed() {
-    await createCustomer();
+    const customer = await createCustomer();
     const movies = await createMovies();
     const screens = await createScreens();
     await createScreenings(screens, movies);
-
+    await createSeats(screens);
+    const ticket = await createTicket(customer);
+    //await assignSeatToCustomer();
     process.exit(0);
 }
 
@@ -17,13 +19,13 @@ async function createCustomer() {
             contact: {
                 create: {
                     email: 'alice@boolean.co.uk',
-                    phone: '1234567890'
-                }
-            }
+                    phone: '1234567890',
+                },
+            },
         },
         include: {
-            contact: true
-        }
+            contact: true,
+        },
     });
 
     console.log('Customer created', customer);
@@ -50,15 +52,13 @@ async function createMovies() {
 }
 
 async function createScreens() {
-    const rawScreens = [
-        { number: 1 }, { number: 2 }
-    ];
+    const rawScreens = [{ number: 1 }, { number: 2 }];
 
     const screens = [];
 
     for (const rawScreen of rawScreens) {
         const screen = await prisma.screen.create({
-            data: rawScreen
+            data: rawScreen,
         });
 
         console.log('Screen created', screen);
@@ -81,15 +81,15 @@ async function createScreenings(screens, movies) {
                     startsAt: screeningDate,
                     movie: {
                         connect: {
-                            id: movies[i].id
-                        }
+                            id: movies[i].id,
+                        },
                     },
                     screen: {
                         connect: {
-                            id: screen.id
-                        }
-                    }
-                }
+                            id: screen.id,
+                        },
+                    },
+                },
             });
 
             console.log('Screening created', screening);
@@ -97,8 +97,70 @@ async function createScreenings(screens, movies) {
     }
 }
 
+//added func here
+
+async function createTicket(customer) {
+    const createdTicket = await prisma.ticket.create({
+        data: {
+            customer: {
+                connect: {
+                    id: customer.id,
+                },
+            },
+            screening: {
+                connect: {
+                    id: 1,
+                },
+            },
+            seat: {
+                connect: {
+                    id: 1,
+                },
+            },
+        },
+    });
+    console.log('Ticket created', createdTicket);
+    return createdTicket;
+}
+
+async function createSeats(screens) {
+    const numberOfSeats = 10
+    const availableSeats = Array.from(Array(numberOfSeats).keys());
+
+    for (let i = 0; i < availableSeats.length; i++) {
+        const createdSeat = await prisma.seat.create({
+            data: {
+                number: availableSeats[i],
+                screen: {
+                    connect: {
+                        id: screens[0].id,
+                    },
+                },
+            },
+        });
+        console.log('Seat created', createdSeat);
+    }
+}
+
+// async function assignSeatToCustomer() {
+//     const assignedSeat = await prisma.seatsAssignedToCustomer.update({
+//         data: {
+//             customer: {
+//                 connect: {
+//                     id: 1,
+//                 },
+//             },
+//             seat: {
+//                 connect: {
+//                     id: 1,
+//                 },
+//             },
+//         },
+//     });
+// }
+
 seed()
-    .catch(async e => {
+    .catch(async (e) => {
         console.error(e);
         await prisma.$disconnect();
     })
