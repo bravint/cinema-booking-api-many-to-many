@@ -14,16 +14,9 @@ app.use(express.json());
 // Tell express to use a URL Encoding middleware
 app.use(express.urlencoded({ extended: true }));
 
-
-
 // Add your router below
-
 const ticketRouter = require('./routers/tickets');
 app.use('/ticket', ticketRouter);
-
-
-
-
 
 // Set up a default "catch all" route to use when someone visits a route
 // that we haven't built

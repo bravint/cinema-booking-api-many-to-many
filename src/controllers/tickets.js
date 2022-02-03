@@ -14,16 +14,16 @@ const createNewTicket = async (req, res) => {
 
     let seatArray = [];
 
-    seatId.forEach(element => {
+    seatId.forEach((element) => {
         obj = {
             seat: {
                 connect: {
                     id: element,
                 },
             },
-        }
-        seatArray.push(obj)
-    })
+        };
+        seatArray.push(obj);
+    });
 
     const createdTicket = await prisma.ticket.create({
         data: {
@@ -38,7 +38,7 @@ const createNewTicket = async (req, res) => {
                 },
             },
             seats: {
-                create: seatArray
+                create: seatArray,
             },
         },
         include: {
@@ -46,7 +46,6 @@ const createNewTicket = async (req, res) => {
             screening: true,
             seats: true,
         },
-    
     });
 
     console.log(`createdTicket`, createdTicket);

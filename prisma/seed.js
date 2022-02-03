@@ -8,7 +8,6 @@ async function seed() {
     await createScreenings(screens, movies);
     await createSeats(screens);
     await createTickets(customer);
-    //await seatInTicket();
     process.exit(0);
 }
 
@@ -139,23 +138,6 @@ async function createSeats(screens) {
         }
     }
 }
-
-// async function seatInTicket() {
-//     const assignedSeat = await prisma.seatInTicket.update({
-//         data: {
-//             ticket: {
-//                 connect: {
-//                     id: 1,
-//                 },
-//             },
-//             seat: {
-//                 connect: {
-//                     id: 1,
-//                 },
-//             },
-//         },
-//     });
-// }
 
 seed()
     .catch(async (e) => {
