@@ -7,8 +7,8 @@ async function seed() {
     const screens = await createScreens();
     await createScreenings(screens, movies);
     await createSeats(screens);
-    const ticket = await createTicket(customer);
-    //await assignSeatToCustomer();
+    await createTickets(customer);
+    //await seatInTicket();
     process.exit(0);
 }
 
@@ -97,9 +97,7 @@ async function createScreenings(screens, movies) {
     }
 }
 
-//added func here
-
-async function createTicket(customer) {
+async function createTickets(customer) {
     const createdTicket = await prisma.ticket.create({
         data: {
             customer: {
@@ -112,40 +110,40 @@ async function createTicket(customer) {
                     id: 1,
                 },
             },
-            seat: {
-                connect: {
-                    id: 1,
-                },
-            },
         },
     });
     console.log('Ticket created', createdTicket);
+
     return createdTicket;
 }
 
 async function createSeats(screens) {
-    const numberOfSeats = 10
+    const numberOfSeats = 5;
+
     const availableSeats = Array.from(Array(numberOfSeats).keys());
 
-    for (let i = 0; i < availableSeats.length; i++) {
-        const createdSeat = await prisma.seat.create({
-            data: {
-                number: availableSeats[i],
-                screen: {
-                    connect: {
-                        id: screens[0].id,
+    for (let i = 0; i < screens.length; i++) {
+        for (let j = 0; j < availableSeats.length; j++) {
+            const createdSeat = await prisma.seat.create({
+                data: {
+                    number: availableSeats[j] + 1,
+                    screen: {
+                        connect: {
+                            id: screens[i].id,
+                        },
                     },
                 },
-            },
-        });
-        console.log('Seat created', createdSeat);
+            });
+
+            console.log('Seat created', createdSeat);
+        }
     }
 }
 
-// async function assignSeatToCustomer() {
-//     const assignedSeat = await prisma.seatsAssignedToCustomer.update({
+// async function seatInTicket() {
+//     const assignedSeat = await prisma.seatInTicket.update({
 //         data: {
-//             customer: {
+//             ticket: {
 //                 connect: {
 //                     id: 1,
 //                 },
