@@ -109,6 +109,24 @@ async function createTickets(customer) {
                     id: 1,
                 },
             },
+            seats: {
+                create: [
+                    {
+                        seat: {
+                            connect: {
+                                id: 1,
+                            },
+                        },
+                    },
+                    {
+                        seat: {
+                            connect: {
+                                id: 2,
+                            },
+                        },
+                    },
+                ],
+            },
         },
     });
     console.log('Ticket created', createdTicket);
