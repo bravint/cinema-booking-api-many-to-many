@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const { createNewTicket } = require('../controllers/tickets');
+const { createNewTicket } = require('../controllers/ticket');
 
 router.post('/', createNewTicket);
 
